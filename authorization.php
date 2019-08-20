@@ -14,10 +14,6 @@ if (isset($_SESSION['login']))
 {
     $login = $_SESSION['login'];
 }
-if (isset($_SESSION['email']))
-{
-    $email = $_SESSION['email'];
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -38,7 +34,7 @@ if (isset($_SESSION['email']))
                     </div>
                     <div class="form-group">
                         <label for="">Ваш пароль</label>
-                        <input type="password" name="password" class="form-control" value="<?php echo $email;?>">
+                        <input type="password" name="password" class="form-control">
                     </div>                    
                     <div class="form-group">
                         <button type="submit" class="btn btn-success">Ввод</button>

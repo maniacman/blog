@@ -7,7 +7,6 @@ $login = htmlspecialchars(trim($_POST['login']));
 $password = htmlspecialchars(trim($_POST['password']));
 
 $_SESSION['login'] = $login;
-$_SESSION['email'] = $email;
 
 $msg = checkLogin($login, $msg);
 $msg = checkPassword($password, $msg);
@@ -28,12 +27,9 @@ $users = $statement->fetchAll(PDO::FETCH_ASSOC);
 $hash = $users[0][password];
 if((password_verify($password, $hash)))
 {
-	$_SESSION['id'] = $users[0][id];
-	$_SESSION['auth'] = 'user';
-	if ($login == 'admin')
-	{
-		$_SESSION['auth'] = 'admin';
-	}
+	$_SESSION['login'] = $users[0][login];
+	$_SESSION['role'] = $users[0][role];
+	$_SESSION['email'] = $users[0][email];
 	header('Location: index.php');
 	exit;
 }

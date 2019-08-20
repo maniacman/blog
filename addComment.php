@@ -19,8 +19,8 @@ else
 
 $pdo = new PDO('mysql:host=localhost;dbname=blog;charset=utf8;', 'root', '');
 
-$statement = $pdo->prepare("INSERT INTO `comments` (login, comment, datecomment) VALUES(:login, :comment, :datecomment)");
-$values = ['login' => $login, 'comment' => $message, 'datecomment' => $dateComment];
+$statement = $pdo->prepare("INSERT INTO `comments` (login, comment, datecomment, access) VALUES(:login, :comment, :datecomment, :access)");
+$values = ['login' => $login, 'comment' => $message, 'datecomment' => $dateComment, 'access' => 'allowed'];
 $statement->execute($values);
 header('Location: index.php');
 exit;

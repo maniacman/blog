@@ -1,17 +1,11 @@
 <?php
 session_start();
-if (isset($_SESSION['role']))
+if ($_SESSION['role'] != 'admin' && $_SESSION['role'] != 'moder')
 {
-	$role = $_SESSION['role'];
-}
-else
-{
-	$role = 'guest';
-	$_SESSION['role'] = $role;
-	$login = 'guest';
+	header('Location: index.php');
 }
 include 'functions.php';
-$comments = getAllowedComments();
+$comments = getAllComments();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -26,7 +20,7 @@ $comments = getAllowedComments();
 </head>
 <body>
 	<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-		<a class="navbar-brand" href="#">Навигация</a>
+		<a class="navbar-brand" href="#">Админка</a>
 		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>
 		</button>
@@ -59,39 +53,37 @@ $comments = getAllowedComments();
 				<a class="dropdown-item" href="exit.php">Выход</a>
 			</div>
 		</div>
-	</nav>	
+	</nav>
 
 	<div class="container">
 		<div class="row">
-			<h1>Комментарии</h1>
-		</div>
-		<?php foreach ($comments as $key => $value): ?>
-			<div class="row mt-3">
-				<div class="col-md-2">
-					<img src="uploads/<?php echo getUserPhoto($value[login]);?>" alt="..." class="img-thumbnail">
-				</div>
-				<div class="col-md-8">
-					<?php echo $value[login] . '<br>';?>
-					<?php echo date("d-m-Y", $value[datecomment]) . '<br>';?>
-					<?php echo $value[comment] . '<br>';?>
-				</div>
-			</div>
-		<?php endforeach; ?>
-	</div>
-
-	<div class="container">
-		<div class="row">
-			<div class="col-md-8">
-				<h1>Оставить комментарий</h1>
-				<form action="addComment.php" method="post">
-					<div class="form-group">
-						<label for="">Сообщение</label>
-						<textarea name="message" class="form-control" maxlength="250"></textarea>
-					</div>                      
-					<div class="form-group">
-						<button type="submit" class="btn btn-success">Отправить</button>
-					</div>
-				</form>
+			<div class="col-md-12">
+				<h1>Админ панель</h1>
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th>Фото</th>
+							<th>Логин</th>
+							<th>Дата</th>
+							<th>Комментарий</th>
+							<th>Действия</th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php foreach ($comments as $key => $value): ?>
+							<tr>
+								<td><img src="uploads/<?php echo getUserPhoto($value[login]);?>" alt="..." class="img-thumbnail" width="400"></td>
+								<td><?php echo $value[login] . '<br>';?></td>
+								<td><?php echo date("d-m-Y", $value[datecomment]) . '<br>';?></td>
+								<td><?php echo $value[comment] . '<br>';?></td>
+								<td>
+									<a href="changeAccess.php?id=<?php echo $value[id];?>&access=<?php echo $value[access];?>" class="btn <?php if ($value[access] == 'allowed') echo 'btn-success">Запретить'; else echo 'btn-warning">Разрешить';?></a>
+									<a href="deleteComment.php?id=<?php echo $value[id];?>" onclick="return confirm('are you sure?')" class="btn btn-danger">Удалить</a>
+								</td>
+							</tr>							
+						<?php endforeach; ?>
+					</tbody>
+				</table>
 			</div>
 		</div>
 	</div>

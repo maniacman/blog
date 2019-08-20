@@ -3,11 +3,10 @@ session_start();
 include 'functions.php';
 $msg = [];
 
-$id = $_SESSION['id'];
-$login = htmlspecialchars(trim($_POST['login']));
+$newLogin = htmlspecialchars(trim($_POST['login']));
 $email = htmlspecialchars(trim($_POST['email']));
 
-$msg = checkLogin($login, $msg);
+$msg = checkLogin($newLogin, $msg);
 $msg = checkEmail($email, $msg);
 
 if (count($msg) > 0)
@@ -19,14 +18,14 @@ if (count($msg) > 0)
 
 $pdo = new PDO('mysql:host=localhost;dbname=blog;charset=utf8;', 'root', '');
 
-if ($login != $_SESSION['login'])
+if ($newLogin != $_SESSION['login'])
 {
-	$msg = checkUniqueLogin($pdo, $login, $msg);
+	$msg = checkUniqueLogin($pdo, $newLogin, $msg);
 }
 
 if ($email != $_SESSION['email'])
 {
-	$msg = checkUniqueLogin($pdo, $email, $msg);
+	$msg = checkUniqueEmail($pdo, $email, $msg);
 }
 
 if (count($msg) == 0)
@@ -42,11 +41,13 @@ if (count($msg) == 0)
 			unlink($path);
 		}
 	}
-	$statement = $pdo->prepare("UPDATE `users` SET `login` = :login, `email` = :email, `filename` = :filename WHERE `id` = :id");
-	$values = ['login' => $login, 'email' => $email, 'filename' => $name, 'id' => $id];
+	$statement = $pdo->prepare("UPDATE `users` SET `login` = :newLogin, `email` = :email, `filename` = :filename WHERE `login` = :login");
+	$values = ['newLogin' => $newLogin, 'email' => $email, 'filename' => $name, 'login' => $_SESSION['login']];
 	$statement->execute($values);
-	$_SESSION['login'] = $login;
+	$_SESSION['login'] = $newLogin;
 	$_SESSION['email'] = $email;
+	$msg[] = 'Данные успешно изменены.';
+	$_SESSION['msg'] = $msg;
 }
 else
 {

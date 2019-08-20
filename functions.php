@@ -1,4 +1,5 @@
 <?php
+//Валидация вводимого логина
 function checkLogin($login, $msg)
 {
 	if ($login == '')
@@ -8,6 +9,7 @@ function checkLogin($login, $msg)
 	return $msg;
 }
 
+//Валидация вводимого email
 function checkEmail($email, $msg)
 {
 	if ($email == '')
@@ -21,6 +23,7 @@ function checkEmail($email, $msg)
 	return $msg;
 }
 
+//Валидация вводимого пароля
 function checkPassword($password, $msg)
 {
 	if ($password == '')
@@ -30,6 +33,7 @@ function checkPassword($password, $msg)
 	return $msg;
 }
 
+//Проверка вводиомго логина на уникальность
 function checkUniqueLogin($pdo, $login, $msg)
 {
 	$statement = $pdo->prepare("SELECT * FROM `users` WHERE `login` = :login");
@@ -43,6 +47,7 @@ function checkUniqueLogin($pdo, $login, $msg)
 	return $msg;
 }
 
+//Проверка вводиомго email на уникальность
 function checkUniqueEmail($pdo, $email, $msg)
 {
 	$statement = $pdo->prepare("SELECT * FROM `users` WHERE `email` = :email");
@@ -56,6 +61,8 @@ function checkUniqueEmail($pdo, $email, $msg)
 	return $msg;
 }
 
+
+//возвращает уникальное имя для загружаемого файла
 function uploadImage($image)
 {
 	$path = 'uploads';
@@ -66,7 +73,7 @@ function uploadImage($image)
 	$name = $filename . '.' . $extension;
 	return $name;
 }
-
+//создает имя файла, и если оно уникальное (такого файла нет в папке) то возвращает его.
 class DFileHelper
 {
 	public static function getRandomFileName($path, $extension='')
@@ -80,3 +87,40 @@ class DFileHelper
 		return $name;
 	}
 }
+
+//возвращает массив всех комментариев
+function getAllComments()
+{
+	$pdo = new PDO('mysql:host=localhost;dbname=blog;charset=utf8;', 'root', '');
+	$comments = $pdo->query("SELECT * FROM `comments`")->fetchAll(PDO::FETCH_ASSOC);
+	return $comments;
+}
+
+
+//возвращает массив только разрешенных комментариев
+function getAllowedComments()
+{
+	$pdo = new PDO('mysql:host=localhost;dbname=blog;charset=utf8;', 'root', '');
+	$comments = $pdo->query("SELECT * FROM `comments` WHERE `access` = 'allowed'")->fetchAll(PDO::FETCH_ASSOC);
+	return $comments;
+}
+
+//получая логин пользователя возвращает имя файла с фоткой пользователя
+function getUserPhoto($login)
+{
+	if ($login == 'guest')
+	{
+		$fileName = 'guest.jpg';
+	}
+	else
+	{
+		$pdo = new PDO('mysql:host=localhost;dbname=blog;charset=utf8;', 'root', ''); 
+		$statement = $pdo->prepare("SELECT * FROM `users` WHERE `login` = :login");
+		$values = ['login' => $login];
+		$statement->execute($values);
+		$user = $statement->fetchAll(PDO::FETCH_ASSOC);
+		$fileName = $user[0]['filename'];
+	}
+	return $fileName;
+}
+

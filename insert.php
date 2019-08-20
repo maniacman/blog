@@ -1,7 +1,7 @@
 <?php
 session_start();
-$msg = [];
 include 'functions.php';
+$msg = [];
 
 $login = htmlspecialchars(trim($_POST['login']));
 $email = htmlspecialchars(trim($_POST['email']));
@@ -35,8 +35,8 @@ if ($_POST['password'] !== $_POST['password2'])
 
 if (count($msg) == 0)
 {
-	$statement = $pdo->prepare("INSERT INTO `users` (login, email, password) VALUES(:login, :email, :password)");
-	$values = ['login' => $login, 'email' => $email, 'password' => $password];
+	$statement = $pdo->prepare("INSERT INTO `users` (role, login, email, password, filename) VALUES(:role, :login, :email, :password, :filename)");
+	$values = ['role' => 'user', 'login' => $login, 'email' => $email, 'password' => $password, 'filename' => 'noob.jpg'];
 	$statement->execute($values);
 	$msg[] = 'Логин и пароль успешно сохранены. Авторизуйтесь, пожалуйста.';
 	$_SESSION['msg'] = $msg;

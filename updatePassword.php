@@ -3,7 +3,7 @@ session_start();
 include 'functions.php';
 $msg = [];
 
-$id = $_SESSION['id'];
+$login = $_SESSION['login'];
 $currentPassword = htmlspecialchars(trim($_POST['currentPassword']));
 $newPassword1 = htmlspecialchars(trim($_POST['newPassword1']));
 $newPassword2 = htmlspecialchars(trim($_POST['newPassword2']));
@@ -26,17 +26,17 @@ if (count($msg) > 0)
 
 $pdo = new PDO('mysql:host=localhost;dbname=blog;charset=utf8;', 'root', '');
 
-$statement = $pdo->prepare("SELECT * FROM `users` WHERE `id` = :id");
-$values = ['id' => $id];
+$statement = $pdo->prepare("SELECT * FROM `users` WHERE `login` = :login");
+$values = ['login' => $login];
 $statement->execute($values);
 $users = $statement->fetchAll(PDO::FETCH_ASSOC);
 $hash = $users[0][password];
 if((password_verify($currentPassword, $hash)))
 {
 	$pdo = new PDO('mysql:host=localhost;dbname=blog;charset=utf8;', 'root', '');
-	$statement = $pdo->prepare("UPDATE `users` SET `password` = :password WHERE `id` = :id");
+	$statement = $pdo->prepare("UPDATE `users` SET `password` = :password WHERE `login` = :login");
 	$newPassword1 = password_hash($newPassword1, PASSWORD_DEFAULT);
-	$values = ['password' => $newPassword1, 'id' => $id];
+	$values = ['password' => $newPassword1, 'login' => $login];
 	$statement->execute($values);
 	$msg[] = 'Новый пароль сохранен';
 	$_SESSION['msg'] = $msg;
